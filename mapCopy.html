@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Alegreya:400,400italic,700' rel='stylesheet' type='text/css'>
+<style>
+    body {
+        background-color: #363b3f;
+        color: white;
+    }
+    
+    .center-block {
+        text-align: center !important;
+    }
+    p {
+        font-family: 'Alegreya';
+        font-style: italic;
+    }
+
+    h2 {
+        font-family: 'Alegreya', serif;
+    }
+    svg {
+        margin: 20px;
+    }
+    
+    .axis path {
+        fill: none;
+        stroke: white;
+        shape-rendering: crispEdges;
+    }
+    .axis text {
+        font-family: "Lato";
+        font-size: 11px;
+        fill: white;
+    }
+    
+/*
+    .x.axis path {
+      display: none;
+    }
+*/
+
+    .line {
+        fill: none;
+        stroke: #ecffc4;
+        stroke-width: 3px;
+    }
+    
+    g {
+        font-family: "Lato";
+    }
+    
+    #description {
+        font-family: 'Alegreya';
+        color: white;
+    }
+    
+    .selected {
+/*        fill: #d4e5ae;*/
+        fill: #ecffc4;
+    }
+    
+    .hidden {
+        display: none;
+    }
+    
+    div.tooltip {
+        color: #222;
+        background-color: #fff;
+        padding: .5em;
+        text-shadow: #f5f5f5 0 1px 0;
+        border-radius: 2px;
+        opacity: 0.9;
+        position: absolute;
+    }
+    
+    .howMany {
+        font-size: 30px;
+        color: #ecffc4;
+    }
+    
+</style>
+<body>
+<div class="container">
+    <div class="center-block">
+        <h2>Urban data visualized</h2>
+        <p>My visualization presents countries and their population density from 1960 - 2014.</p>
+        <p>There are <span class="howMany"></span> countries in the World.</p>
+        <div class="map"></div>
+        <h2 id="description"></h2>
+    </div>
+    <div class="lineChart"></div>
+    
+</div>
+    
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script>
+
+var width = 960,
+    height = 600;
+    
+var widthChart = 460,
+    heightChart = 300;
+
+var margin = {
+    top: 30,
+    right: 30,
+    left : 50,
+    bottom : 30
+}   
+
+var xScale = d3.scale.linear()
+    .range([margin.left, widthChart - margin.right]);
+//    .domain([1960, 2015]);
+    
+var yScale = d3.scale.linear()
+    .range([heightChart - margin.top, margin.bottom]);
+
+var xAxis = d3.svg.axis()
+    .scale(xScale)
+    .ticks(10);
+  
+var yAxis = d3.svg.axis()
+    .scale(yScale)
+    .ticks(7)
+    .orient("left");  
+    
+var line = d3.svg.line()
+    .x(function(d) { return xScale(d.year); })
+    .y(function(d) { return yScale(d.value); })
+    .interpolate("basis");
+
+    
+var years = [
+    "1960", "1961", "1962", "1963", "1964", "1965", "1966", "1967", "1968", "1969",
+    "1970", "1971", "1972", "1973", "1974", "1975", "1976", "1977", "1978", "1979",
+    "1980", "1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1989",
+    "1990", "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999",
+    "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009",
+    "2010", "2011", "2012", "2013", "2014", "2015"
+];      
+
+    
+var projection = d3.geo.mercator()
+    .scale(150)
+    .translate([width / 2, height / 1.5]);
+
+var path = d3.geo.path()
+    .projection(projection);
+    
+var svg = d3.select("body").select(".container").select(".center-block").select(".map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+    
+var svgLineChart = d3.select("body").select(".container").select(".lineChart").append("svg")
+//var svgLineChart = d3.select(".lineChart")
+    .attr("width", widthChart)
+    .attr("id", "svgLineChart")
+    .attr("height", heightChart);
+//    .transition();
+    
+var color = d3.scale.linear().range(["#bfddfc","#1e4770"]);    
+    
+var tooltip = d3.select('body').append('div')
+            .attr('class', 'hidden tooltip');    
+    
+queue()  
+    .defer(d3.json, 'countries.topo.json')
+    .defer(d3.csv, 'countriesModified.csv')
+    .await(visualize);
+    
+function visualize(error, countries, data) {
+    if (error) return console.error(error);
+    
+    var countriesObj = {};
+    var countriesArr = [];
+    for (var i = 0; i < data.length; i++) {
+        countriesObj[i] = {
+            countryName : data[i].CountryName,
+            countryCode : data[i].CountryCode, 
+            years : [
+                {year : "1961", value : data[i].y1961},
+                {year : "1962", value : data[i].y1962},
+                {year : "1963", value : data[i].y1963},
+                {year : "1964", value : data[i].y1964},
+                {year : "1965", value : data[i].y1965},
+                {year : "1966", value : data[i].y1966},
+                {year : "1967", value : data[i].y1967},
+                {year : "1968", value : data[i].y1968},
+                {year : "1969", value : data[i].y1969},
+                {year : "1970", value : data[i].y1970},
+                {year : "1971", value : data[i].y1971},
+                {year : "1972", value : data[i].y1972},
+                {year : "1973", value : data[i].y1973},
+                {year : "1974", value : data[i].y1974},
+                {year : "1975", value : data[i].y1975},
+                {year : "1976", value : data[i].y1976},
+                {year : "1977", value : data[i].y1977},
+                {year : "1978", value : data[i].y1978},
+                {year : "1979", value : data[i].y1979},
+                {year : "1980", value : data[i].y1980},
+                {year : "1981", value : data[i].y1981},
+                {year : "1982", value : data[i].y1982},
+                {year : "1983", value : data[i].y1983},
+                {year : "1984", value : data[i].y1984},
+                {year : "1985", value : data[i].y1985},
+                {year : "1986", value : data[i].y1986},
+                {year : "1987", value : data[i].y1987},
+                {year : "1988", value : data[i].y1988},
+                {year : "1989", value : data[i].y1989},
+                {year : "1990", value : data[i].y1990},
+                {year : "1991", value : data[i].y1991},
+                {year : "1992", value : data[i].y1992},
+                {year : "1993", value : data[i].y1993},
+                {year : "1994", value : data[i].y1994},
+                {year : "1995", value : data[i].y1995},
+                {year : "1996", value : data[i].y1996},
+                {year : "1997", value : data[i].y1997},
+                {year : "1998", value : data[i].y1998},
+                {year : "1999", value : data[i].y1999},
+                {year : "2000", value : data[i].y2000},
+                {year : "2001", value : data[i].y2001},
+                {year : "2002", value : data[i].y2002},
+                {year : "2003", value : data[i].y2003},
+                {year : "2004", value : data[i].y2004},
+                {year : "2005", value : data[i].y2005},
+                {year : "2006", value : data[i].y2006},
+                {year : "2007", value : data[i].y2007},
+                {year : "2008", value : data[i].y2008},
+                {year : "2009", value : data[i].y2009},
+                {year : "2010", value : data[i].y2010},
+                {year : "2011", value : data[i].y2011},
+                {year : "2012", value : data[i].y2012},
+                {year : "2013", value : data[i].y2013},
+                {year : "2014", value : data[i].y2014}
+//                {year : "2015", value : data[i].y2015}
+            ]
+        }
+        countriesArr[i] = countriesObj[i];
+    }
+    
+    console.log(countriesArr[0]);
+    
+    function getCountryName(id) {
+        for (var i = 0; i < countriesArr.length; i++) {
+            if (countriesArr[i].countryCode === id) {
+                return countriesArr[i].countryName;
+            }
+        }
+    }
+    
+    function getHowManyCountries() {
+        return countriesArr.length;
+    }
+    
+    d3.select(".howMany").text(getHowManyCountries);
+    
+    function chooseCountry(d) {
+        var countryId = d.id;
+        console.log(countryId);
+        for (var i = 0; i < countriesArr.length; i++) {
+            if (countriesArr[i].countryCode === countryId) {
+                
+                if (countriesArr[i].years.value === undefined) {
+                    console.log("no data");
+                }
+                
+                console.log(countriesArr[i].countryName);
+                
+                var min = d3.min(countriesArr[i].years, function(d) {return d.value;});
+                var max = d3.max(countriesArr[i].years, function(d) {return d.value});
+                yScale.domain([min, max]);
+                
+                var minYear = d3.min(countriesArr[i].years, function(d) {return d.year;});
+                var maxYear = d3.max(countriesArr[i].years, function(d) {return d.year});
+                xScale.domain([minYear, maxYear]);
+                
+                svgLineChart.selectAll("*").remove();
+                
+                svgLineChart.append("g")
+                    .attr("transform", "translate(0," + (heightChart - margin.bottom) + ")")
+                    .attr("class","x axis")
+                    .call(xAxis);
+                
+                svgLineChart.append("g")
+                    .attr("transform", "translate(" + (margin.left) + ",0)")
+                    .attr("class","axis")
+                    .call(yAxis)
+                    .append("text")
+                    .attr("transform", "rotate(-90)")
+//                    .attr("y", 0 – (margin.left))
+                    .attr("y", 6)
+                    .attr("dy", ".5em")
+                    .attr("x",0 - (heightChart / 2))
+                    .style("text-anchor", "middle")
+                    .text("Population density"); 
+                
+                svgLineChart.append("path")
+                    .datum(countriesArr[i].years)
+                    .attr("class", "line")
+                    .attr("d", line);
+
+                d3.select("#description")
+                    .text(countriesArr[i].countryName);
+                }
+            }
+        return countryId;      
+    }
+    
+    
+
+    //DRAW A LINECHART
+//    yScale.domain(d3.extent(data, function(d) { 
+////        return d.CountryName.Aruba;
+//        
+//    }));
+//    yScale.domain([d3.min(function(d) {})])
+
+    
+    //DRAW A MAP
+    svg.append("g")
+        .attr("id", "countries")
+        .selectAll("path")
+        .data(topojson.feature(countries, countries.objects.countries).features)
+        .enter()
+        .append("path")
+        .attr("fill", function(d) {
+            var value = d.properties.size;
+            if (value) {
+                return color(value);
+            }
+            else {
+                return "#747e87";
+            }
+        })
+        .style("stroke", "#363b3f")
+        .attr("id", function(d) { return d.id; })
+        .attr("d", path)
+        .on("click", function(d) {
+            chooseCountry(d);
+            d3.select(".selected").classed("selected", false);
+            d3.select(this).classed("selected", true);
+        })
+        .on("mouseover", function(d) {
+            d3.select(this)
+                .transition()
+                .duration(50)
+                .attr("fill", "#b0bf91");
+//            var aux = d.id;
+//            d3.select(".description")
+//                .text(aux);
+        })
+        .on("mouseout", function(d) {
+            tooltip.classed('hidden', true);
+            d3.select(this)
+                .transition()
+                .duration(50)
+                .attr("fill", "#747e87")
+        })
+        .on("mousemove", function(d) {
+            var mouse = d3.mouse(svg.node()).map(function(d) {
+                return parseInt(d);
+            });
+            tooltip.classed('hidden', false)
+                .attr('style', 'left:' + (mouse[0] + 200) +
+                        'px; top:' + (mouse[1] + 120) + 'px')
+                .html(getCountryName(d.id));
+        });
+               
+};
+    
+
+</script>
+</body>
+</html>
