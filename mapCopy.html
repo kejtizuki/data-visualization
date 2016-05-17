@@ -4,16 +4,18 @@
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link href='https://fonts.googleapis.com/css?family=Alegreya:400,400italic,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/style.css">
 <body>
 <div class="container">
     <div class="center-block">
-        <h2>Urban data visualized</h2>
+        <h1>Population data visualized</h1>
         <p>My visualization presents countries and their population density from 1980 - 2014. On the right bottom side there is also a simple bubble chart which presents continents and their populations. Each bubble represents one continent and its size is equivalet to continents size. On the left side there is a line chart showing population densities in each country.</p>
+        <p>World population (data from 2014): <span id="worldPopulation"></span></p>
         <div class="map"></div>
     </div>
     <div class="row">
-        <div class="col-md-6 lineChart"><h2 id="description"></h2></div>
+        <div class="col-md-6 lineChart"><h2 id="description"></h2><span id="countryPopulation"></span></div>
         <div class="col-md-6 bubbleChart"><h2>Population by continents</h2></div>
     </div>
 <!--

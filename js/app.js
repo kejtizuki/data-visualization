@@ -56,6 +56,7 @@ var path = d3.geo.path()
     .projection(projection);
 
 var color = d3.scale.category20b();
+//var color = d3.scale.linear().range(["white", "blue"]);
 
 var bubble = d3.layout.pack()
     .sort(null)
@@ -81,7 +82,7 @@ var svgLineChart = d3.select("body").select(".container").select(".row").select(
 
     
 var tooltip = d3.select('body').append('div')
-            .attr('class', 'hidden tooltip');    
+    .attr('class', 'hidden tooltip');    
 
 var tooltipBubble = d3.select('body').append('div')
     .attr('class', 'hidden tooltip'); 
@@ -102,6 +103,8 @@ function visualize(error, countries, data, population, continents) {
         d.continentName = d["ContinentName"];
     });
 
+    
+    //BUBBBLE CHART
     y.domain([
         d3.min(continents, function(d) {return d.population}),
         d3.max(continents, function(d) {return d.population})
@@ -111,6 +114,17 @@ function visualize(error, countries, data, population, continents) {
         d3.min(continents, function(d) {return d.size}),
         d3.max(continents, function(d) {return d.size})
     ]);
+    
+    
+    function getCurrentPopulation() {
+        var worldPopulation = 0;
+        for (var i = 0; i < continents.length; i++) {
+            worldPopulation += continents[i].population;
+        }
+        return worldPopulation;
+    }
+    
+     d3.select("#worldPopulation").text(getCurrentPopulation());
     
     svgBubble.append("g")
         .attr("class", "x axis")
@@ -143,13 +157,19 @@ function visualize(error, countries, data, population, continents) {
         .attr("r", function(d) {return (d.size / 10000000) * 6.5})
         .attr("cx", function(d) { return x(d.size); })
         .attr("cy", function(d) { return y(d.population); })
-        .style("fill", function(d) { return color(d.ContinentName); })
+        .style("fill", function(d) { return color(d.continentName); })
+        .attr("opacity", 1)
+        .on("mouseover", function(d) {
+            d3.select(this)
+                .attr("opacity", .5);
+        })
         .on("mouseout", function(d) {
             tooltipBubble.classed('hidden', true);
             d3.select(this)
                 .transition()
                 .duration(50)
                 .attr("fill", "#747e87")
+                .attr("opacity", 1)
         })
         .on("mousemove", function(d) {
             var mouse = d3.mouse(svg.node()).map(function(d) {
@@ -158,12 +178,15 @@ function visualize(error, countries, data, population, continents) {
             tooltipBubble.classed('hidden', false)
                 .attr('style', 'left:' + (mouse[0] + 200) +
                         'px; top:' + (mouse[1] + 120) + 'px')
-            .html(d.continentName + "</br>" + "Size:" + d.size + "km2" + "</br>" + "Population: " + d.population);
+            .html("<p class=\"centerTip\">" + d.continentName + "</br>" 
+                  + "Size:" 
+                  + d.size + "km2" + "</br>" 
+                  + "Population: " + d.population + "</p>");
         });
     
     var countriesObj = {};
     var countriesArr = [];
-    for (var i = 0; i < data.length-1; i++) {
+    for (var i = 0; i < data.length; i++) {
         countriesObj[i] = {
             countryName : data[i].CountryName,
             countryCode : data[i].CountryCode, 
@@ -227,22 +250,35 @@ function visualize(error, countries, data, population, continents) {
         }
         countriesArr[i] = countriesObj[i];
     }
+//    
+//    countriesArr.forEach(function(d) {
+//        d.year = +d.year;
+//        d.value = +d.value;
+//    })
     
     function getCountryName(id) {
         for (var i = 0; i < countriesArr.length; i++) {
             if (countriesArr[i].countryCode === id) {
-                return countriesArr[i].countryName;
+                if (countriesArr[i].countryName !== undefined) {
+                    return countriesArr[i].countryName;  
+                }
+                else {
+                    return id;
+                }
             }
         }
     }
     
-    function getHowManyCountries() {
-        return countriesArr.length;
+    function getCountryPopulation(id) {
+        for (var i = 0; i < countriesArr.length; i++) {
+            if (countriesArr[i].countryCode === id) {
+                return countriesArr[i].years[2014];
+            }
+        }
     }
     
     console.log(countriesArr[0]);
     
-    d3.select(".howMany").text(getHowManyCountries);
     
     function chooseCountry(d) {
         var countryId = d.id;
@@ -283,8 +319,43 @@ function visualize(error, countries, data, population, continents) {
                     .attr("class", "line")
                     .attr("d", line);
                 
+                svgLineChart.selectAll("dot")
+                    .data(countriesArr[i].years)
+                    .enter()
+                    .append("circle")
+                    .attr("r", 5)
+                    .attr("fill", "transparent")
+                    .attr("stroke", "#ecffc4")
+                    .attr("stroke-width", 1.5)
+                    .attr("cx", function(d) { return xScale(d.year); })
+                    .attr("cy", function(d) { return yScale(d.value); })
+                    .on("mouseover", function(d) { 
+                        d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attr("r", 9)
+                            .attr("stroke-width", 4); 
+                    })
+                    .on("mouseout", function(d) { 
+                        tooltip.classed('hidden', true);
+                        d3.select(this)
+                            .transition()
+                            .duration(50)
+                            .attr("r", 5)
+                            .attr("stroke-width", 1.5); 
+                    })
+                    .on("mousemove", function(d) {
+                        var mouse = d3.mouse(svg.node()).map(function(d) {
+                            return parseInt(d);
+                        });
+                        tooltip.classed('hidden', false)
+                        .attr('style', 'left:' + (mouse[0] + 200) + 'px; top:' + (mouse[1] + 150) + 'px')
+                        .html("<p class=\"centerTip\">" + d.year + " : " + d.value + "</p>");
+                    });
+                
                 d3.select("#description")
-                    .text(countriesArr[i].countryName);
+//                    .text("<p id=\"countryName\">" + countriesArr[i].countryName + "</p>");
+                    .text(countriesArr[i].countryName)
                 }
             }
         return countryId;      
@@ -303,6 +374,7 @@ svg.append("g")
     .attr("d", path)
     .on("click", function(d) {
         chooseCountry(d);
+        console.log(getCountryPopulation(d.id));
         d3.select(".selected").classed("selected", false);
         d3.select(this).classed("selected", true);
     })
@@ -325,8 +397,8 @@ svg.append("g")
         });
         tooltip.classed('hidden', false)
             .attr('style', 'left:' + (mouse[0] + 200) +
-                    'px; top:' + (mouse[1] + 120) + 'px')
-            .html(getCountryName(d.id));
+                    'px; top:' + (mouse[1] + 150) + 'px')
+            .html("<p class=\"centerTip\">" + getCountryName(d.id) + "</p>");
     });
-               
+    
 };

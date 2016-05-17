@@ -4,18 +4,25 @@ body {
     color: white;
 }
 
-.center-block {
+.center-block, .centerTip {
     text-align: center !important;
 }
-p {
-    font-family: 'Alegreya';
-    font-style: italic;
+
+.centerTip {
+    font-weight: bold;
 }
 
-h2 {
-    font-family: 'Alegreya', serif;
-    margin-left: 70px;
+p {
+    font-family: 'Quicksand';
+/*    font-style: italic;*/
 }
+
+h2, h1 {
+    font-family: 'Quicksand', serif;
+    margin-left: 70px;
+    font-weight: 400;
+}
+
 svg {
     margin: 20px;
 }
@@ -44,11 +51,11 @@ svg {
 }
 
 g {
-    font-family: "Lato";
+    font-family: "Quicksand";
 }
 
 #description {
-    font-family: 'Alegreya';
+    font-family: 'Quicksand';
     color: white;
 }
 
@@ -70,23 +77,25 @@ div.tooltip {
     position: absolute;
 }
 
-.howMany {
+#worldPopulation {
     font-size: 30px;
     color: #ecffc4;
 }
 
 .dot {
-  stroke: #000;
-}
-
-circle {
-  fill: none;0
   stroke: none;
 }
 
-circle.leaf {
-  fill: rgba(31, 119, 180, 0.7);
-  stroke: rgb(31, 119, 180);
-  stroke-width: 2px;
-  fill-opacity: 1;
+.scatterCircle {
+    stroke: white;
 }
+
+.circle {
+  fill: none;
+  stroke: white;
+}
+
+#countryName {
+    text-transform: capitalize;
+}
+
