@@ -99,3 +99,40 @@ div.tooltip {
     text-transform: capitalize;
 }
 
+.btn, .btn:hover{
+    background-color: #363b3f;
+    border-color: #9c9ede;
+    color: #9c9ede;
+    font-family: "Quicksand";
+    border-radius: 0;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.btn:hover {
+    font-weight: bold;
+    border-width: 2px;
+}
+
+#countriesToCompare {
+    margin-bottom: 50px;
+}
+
+.countryInput {
+    background-color: #363b3f;
+    border-color: #9c9ede;
+    color: #9c9ede;
+    border: solid 1px;
+}
+
+.countryInput:focus {
+    outline: none;
+    border: 2px solid #9c9ede;
+}
+
+#countryPopulation {
+    margin-left: 70px;
+    font-family: "Quicksand";
+    font-size: 12px;
+}
+

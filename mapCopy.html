@@ -18,6 +18,16 @@
         <div class="col-md-6 lineChart"><h2 id="description"></h2><span id="countryPopulation"></span></div>
         <div class="col-md-6 bubbleChart"><h2>Population by continents</h2></div>
     </div>
+    <div class="row">
+        <div id="countriesToCompare" class="center-block">
+            <h2>Compare 2 countries</h2>
+            <div id="form">
+                <input id="countryA" class="countryInput">
+                <input id="countryB" class="countryInput">
+                <button class="btn" onclick="chooseCountriesHTML">Compare!</button>
+            </div>
+        </div>
+    </div>
 <!--
     <div id="plots">
         <div class="lineChart md-6"></div><div class="bubbleChart md-6"></div>
@@ -28,6 +38,10 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 <script src="http://d3js.org/queue.v1.min.js"></script>
+<!--
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+-->
 <script src="js/app.js"></script>
 </body>
 </html>

@@ -20,12 +20,14 @@ var yScale = d3.scale.linear()
 
 var xAxis = d3.svg.axis()
     .scale(xScale)
-    .ticks(10);
+    .ticks(10)
+    .tickFormat(d3.format("d"));
 
 var yAxis = d3.svg.axis()
     .scale(yScale)
     .ticks(7)
-    .orient("left");  
+    .orient("left")
+    .tickFormat(d3.format(".d"));
 
 //for bubble chart
 var x = d3.scale.linear()
@@ -37,11 +39,13 @@ var y = d3.scale.linear()
 var xAxisBubble = d3.svg.axis()
     .scale(x)
     .ticks(3)
-    .orient("bottom");
+    .orient("bottom")
+    .tickFormat(d3.format("d"));
 
 var yAxisBubble = d3.svg.axis()
     .scale(y)
-    .orient("left");
+    .orient("left")
+    .tickFormat(d3.format("d"));
 
 var line = d3.svg.line()
     .x(function(d) { return xScale(d.year); })
@@ -80,6 +84,10 @@ var svgLineChart = d3.select("body").select(".container").select(".row").select(
     .attr("id", "svgLineChart")
     .attr("height", heightChart);
 
+var svgCompare = d3.select("body").select(".container").select(".row").select("#countriesToCompare").append("svg")
+    .attr("width", widthChart)
+    .attr("id", "svgLineChart")
+    .attr("height", heightChart);
     
 var tooltip = d3.select('body').append('div')
     .attr('class', 'hidden tooltip');    
@@ -135,7 +143,7 @@ function visualize(error, countries, data, population, continents) {
         .attr("x", widthChart)
         .attr("y", -6)
         .attr("text-anchor", "end")
-        .text("Country size");
+        .text("Continent size");
 
     svgBubble.append("g")
         .attr("transform", "translate(" + (margin.left) + ",0)")
@@ -250,11 +258,36 @@ function visualize(error, countries, data, population, continents) {
         }
         countriesArr[i] = countriesObj[i];
     }
-//    
-//    countriesArr.forEach(function(d) {
-//        d.year = +d.year;
-//        d.value = +d.value;
-//    })
+    
+    
+    //CHANGE THIS
+    var chosenCountries = [];
+    chooseCountriesHTML = function chooseCountries() {
+        if (chosenCountries.length === 2) {
+            chosenCountries.length = 0;
+        }
+        var countryA = document.getElementById("countryA").value;
+        var countryB = document.getElementById("countryB").value;
+        if (countryA.length !== 0 || countryB.length !== 0) {
+            chosenCountries.push(countryA, countryB);
+        }
+        console.log(chosenCountries);
+        return chosenCountries;
+    };
+    
+    function drawComparedCountries(chosenCountries) {
+        if (chosenCountries.length !== 0) {
+        console.log("adf");
+            for (var i = 0; i < countriesArr.length; i++) {
+            console.log(countriesArr[i].countryName);
+                if (chosenCountries[0] === countriesArr[i].countryName) {
+                    console.log("xxxx");
+                }
+            }
+        }
+    }
+    
+   
     
     function getCountryName(id) {
         for (var i = 0; i < countriesArr.length; i++) {
@@ -272,7 +305,7 @@ function visualize(error, countries, data, population, continents) {
     function getCountryPopulation(id) {
         for (var i = 0; i < countriesArr.length; i++) {
             if (countriesArr[i].countryCode === id) {
-                return countriesArr[i].years[2014];
+                return countriesArr[i].years[countriesArr[i].years.length-1].population;
             }
         }
     }
@@ -354,13 +387,14 @@ function visualize(error, countries, data, population, continents) {
                     });
                 
                 d3.select("#description")
-//                    .text("<p id=\"countryName\">" + countriesArr[i].countryName + "</p>");
-                    .text(countriesArr[i].countryName)
+                    .text(countriesArr[i].countryName);
                 }
             }
         return countryId;      
     }
 
+//button click
+    
 //DRAW A MAP
 svg.append("g")
     .attr("id", "countries")
@@ -374,7 +408,9 @@ svg.append("g")
     .attr("d", path)
     .on("click", function(d) {
         chooseCountry(d);
-        console.log(getCountryPopulation(d.id));
+        console.log("pop" + getCountryPopulation(d.id));
+        d3.select("#countryPopulation")
+            .text("(current population: " + getCountryPopulation(d.id) + ")");
         d3.select(".selected").classed("selected", false);
         d3.select(this).classed("selected", true);
     })
@@ -399,6 +435,9 @@ svg.append("g")
             .attr('style', 'left:' + (mouse[0] + 200) +
                     'px; top:' + (mouse[1] + 150) + 'px')
             .html("<p class=\"centerTip\">" + getCountryName(d.id) + "</p>");
-    });
+    });   
     
 };
+
+
+
