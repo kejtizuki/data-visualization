@@ -27,8 +27,7 @@ var xAxis = d3.svg.axis()
 var yAxis = d3.svg.axis()
     .scale(yScale)
     .ticks(7)
-    .orient("left")
-    .tickFormat(d3.format(".d"));
+    .orient("left");
 
 //for bubble chart
 var x = d3.scale.linear()
@@ -50,8 +49,8 @@ var yAxisBubble = d3.svg.axis()
 
 var line = d3.svg.line()
     .x(function(d) { return xScale(d.year); })
-    .y(function(d) { return yScale(d.value); })
-    .interpolate("basis");
+    .y(function(d) { return yScale(d.value); });
+//    .interpolate("basis");
 
 var projection = d3.geo.mercator()
     .scale(150)
@@ -200,42 +199,22 @@ function visualize(error, countries, data, population, continents) {
             countryName : data[i].CountryName,
             countryCode : data[i].CountryCode, 
             years : [
-//                {year : "1960", value : data[i].y1960, population : population[i].y1960},
-//                {year : "1961", value : data[i].y1961, population : population[i].y1961},
-//                {year : "1962", value : data[i].y1962},
-//                {year : "1963", value : data[i].y1963},
-//                {year : "1964", value : data[i].y1964},
-//                {year : "1965", value : data[i].y1965},
-//                {year : "1966", value : data[i].y1966},
-//                {year : "1967", value : data[i].y1967},
-//                {year : "1968", value : data[i].y1968},
-//                {year : "1969", value : data[i].y1969},
-//                {year : "1970", value : data[i].y1970},
-//                {year : "1971", value : data[i].y1971},
-//                {year : "1972", value : data[i].y1972},
-//                {year : "1973", value : data[i].y1973},
-//                {year : "1974", value : data[i].y1974},
-//                {year : "1975", value : data[i].y1975},
-//                {year : "1976", value : data[i].y1976},
-//                {year : "1977", value : data[i].y1977},
-//                {year : "1978", value : data[i].y1978},
-//                {year : "1979", value : data[i].y1979},
-//                {year : "1980", value : data[i].y1980, population : population[i].y1980},
-//                {year : "1981", value : data[i].y1981, population : population[i].y1981},
-//                {year : "1982", value : data[i].y1982, population : population[i].y1982},
-//                {year : "1983", value : data[i].y1983, population : population[i].y1983},
-//                {year : "1984", value : data[i].y1984, population : population[i].y1984},
-//                {year : "1985", value : data[i].y1985, population : population[i].y1985},
-//                {year : "1986", value : data[i].y1986, population : population[i].y1986},
-//                {year : "1987", value : data[i].y1987, population : population[i].y1987},
-//                {year : "1988", value : data[i].y1988, population : population[i].y1988},
-//                {year : "1989", value : data[i].y1989, population : population[i].y1989},
-//                {year : "1990", value : data[i].y1990, population : population[i].y1990},
-//                {year : "1991", value : data[i].y1991, population : population[i].y1991},
-//                {year : "1992", value : data[i].y1992, population : population[i].y1992},
-//                {year : "1993", value : data[i].y1993, population : population[i].y1993},
-//                {year : "1994", value : data[i].y1994, population : population[i].y1994},
-//                {year : "1995", value : data[i].y1995, population : population[i].y1995},
+                {year : "1980", value : data[i].y1980, population : population[i].y1980},
+                {year : "1981", value : data[i].y1981, population : population[i].y1981},
+                {year : "1982", value : data[i].y1982, population : population[i].y1982},
+                {year : "1983", value : data[i].y1983, population : population[i].y1983},
+                {year : "1984", value : data[i].y1984, population : population[i].y1984},
+                {year : "1985", value : data[i].y1985, population : population[i].y1985},
+                {year : "1986", value : data[i].y1986, population : population[i].y1986},
+                {year : "1987", value : data[i].y1987, population : population[i].y1987},
+                {year : "1988", value : data[i].y1988, population : population[i].y1988},
+                {year : "1989", value : data[i].y1989, population : population[i].y1989},
+                {year : "1990", value : data[i].y1990, population : population[i].y1990},
+                {year : "1991", value : data[i].y1991, population : population[i].y1991},
+                {year : "1992", value : data[i].y1992, population : population[i].y1992},
+                {year : "1993", value : data[i].y1993, population : population[i].y1993},
+                {year : "1994", value : data[i].y1994, population : population[i].y1994},
+                {year : "1995", value : data[i].y1995, population : population[i].y1995},
                 {year : "1996", value : data[i].y1996, population : population[i].y1996},
                 {year : "1997", value : data[i].y1997, population : population[i].y1997},
                 {year : "1998", value : data[i].y1998, population : population[i].y1998},
