@@ -12,6 +12,7 @@
         <h1>Population data visualized</h1>
         <p>My visualization presents countries and their population density from 1980 - 2014. On the right bottom side there is also a simple bubble chart which presents continents and their populations. Each bubble represents one continent and its size is equivalet to continents size. On the left side there is a line chart showing population densities in each country.</p>
         <p>World population (data from 2014): <span id="worldPopulation"></span></p>
+        <p id="info">* click on the map to choose country</p>
         <div class="map"></div>
     </div>
     <div class="row">
@@ -24,7 +25,7 @@
             <div id="form">
                 <input id="countryA" class="countryInput">
                 <input id="countryB" class="countryInput">
-                <button class="btn" onclick="chooseCountriesHTML">Compare!</button>
+                <button class="btn" onclick="chooseCountries()" value="button text">Compare!</button>
             </div>
         </div>
     </div>

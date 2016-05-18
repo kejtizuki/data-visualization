@@ -1,3 +1,4 @@
+
 var width = 960,
     height = 600;
     
@@ -84,9 +85,8 @@ var svgLineChart = d3.select("body").select(".container").select(".row").select(
     .attr("id", "svgLineChart")
     .attr("height", heightChart);
 
-var svgCompare = d3.select("body").select(".container").select(".row").select("#countriesToCompare").append("svg")
+var svgCompare = d3.select("body").select(".container").select(".row").select("#countriesToCompare").select("#form").append("svg")
     .attr("width", widthChart)
-    .attr("id", "svgLineChart")
     .attr("height", heightChart);
     
 var tooltip = d3.select('body').append('div')
@@ -102,6 +102,9 @@ queue()
     .defer(d3.csv, 'data/continents.csv')
     .await(visualize);
     
+var countriesObj = {};
+var countriesArr = [];     
+
 function visualize(error, countries, data, population, continents) {
     if (error) return console.error(error);
     
@@ -192,8 +195,6 @@ function visualize(error, countries, data, population, continents) {
                   + "Population: " + d.population + "</p>");
         });
     
-    var countriesObj = {};
-    var countriesArr = [];
     for (var i = 0; i < data.length; i++) {
         countriesObj[i] = {
             countryName : data[i].CountryName,
@@ -258,64 +259,10 @@ function visualize(error, countries, data, population, continents) {
         }
         countriesArr[i] = countriesObj[i];
     }
-    
-    
-    //CHANGE THIS
-    var chosenCountries = [];
-    chooseCountriesHTML = function chooseCountries() {
-        if (chosenCountries.length === 2) {
-            chosenCountries.length = 0;
-        }
-        var countryA = document.getElementById("countryA").value;
-        var countryB = document.getElementById("countryB").value;
-        if (countryA.length !== 0 || countryB.length !== 0) {
-            chosenCountries.push(countryA, countryB);
-        }
-        console.log(chosenCountries);
-        return chosenCountries;
-    };
-    
-    function drawComparedCountries(chosenCountries) {
-        if (chosenCountries.length !== 0) {
-        console.log("adf");
-            for (var i = 0; i < countriesArr.length; i++) {
-            console.log(countriesArr[i].countryName);
-                if (chosenCountries[0] === countriesArr[i].countryName) {
-                    console.log("xxxx");
-                }
-            }
-        }
-    }
-    
-   
-    
-    function getCountryName(id) {
-        for (var i = 0; i < countriesArr.length; i++) {
-            if (countriesArr[i].countryCode === id) {
-                if (countriesArr[i].countryName !== undefined) {
-                    return countriesArr[i].countryName;  
-                }
-                else {
-                    return id;
-                }
-            }
-        }
-    }
-    
-    function getCountryPopulation(id) {
-        for (var i = 0; i < countriesArr.length; i++) {
-            if (countriesArr[i].countryCode === id) {
-                return countriesArr[i].years[countriesArr[i].years.length-1].population;
-            }
-        }
-    }
-    
     console.log(countriesArr[0]);
-    
     
     function chooseCountry(d) {
         var countryId = d.id;
-        console.log(countryId);
         for (var i = 0; i < countriesArr.length - 1; i++) {
             if (countriesArr[i].countryCode === countryId) {
                 var min = d3.min(countriesArr[i].years, function(d) {return d.value;});
@@ -392,8 +339,6 @@ function visualize(error, countries, data, population, continents) {
             }
         return countryId;      
     }
-
-//button click
     
 //DRAW A MAP
 svg.append("g")
@@ -436,8 +381,61 @@ svg.append("g")
                     'px; top:' + (mouse[1] + 150) + 'px')
             .html("<p class=\"centerTip\">" + getCountryName(d.id) + "</p>");
     });   
-    
+//    return countriesArr;
 };
 
+function getCountryPopulation(id) {
+    for (var i = 0; i < countriesArr.length; i++) {
+        if (countriesArr[i].countryCode === id) {
+            return countriesArr[i].years[countriesArr[i].years.length-1].population;
+        }
+    }
+}
 
+function getCountryName(id) {
+    for (var i = 0; i < countriesArr.length; i++) {
+        if (countriesArr[i].countryCode === id) {
+            if (countriesArr[i].countryName !== undefined) {
+                return countriesArr[i].countryName;  
+            }
+            else {
+                return id;
+            }
+        }
+    }
+}
 
+var chosenCountries = [];   
+
+//CHANGE THIS
+function chooseCountries() {
+    console.log("xds");
+    if (chosenCountries.length === 2) {
+        chosenCountries.length = 0;
+    }
+    var countryA = document.getElementById("countryA").value;
+    var countryB = document.getElementById("countryB").value;
+    if (countryA.length !== 0 || countryB.length !== 0) {
+        chosenCountries.push(countryA, countryB);
+    }
+    console.log(chosenCountries);
+    return drawComparedCountries(chosenCountries);
+};
+
+var populationsArr = []; 
+
+function drawComparedCountries(chosenCountries) {
+    if (chosenCountries.length !== 0) {
+    console.log("adf");
+        for (var i = 0; i < countriesArr.length; i++) {
+            var name = countriesArr[i].countryName;
+            if (chosenCountries[0] ===  name || chosenCountries[1] === name) {
+                if (populationsArr.length === 2) {
+                    populationsArr.length = 0;
+                }
+                populationsArr.unshift(getCountryPopulation(countriesArr[i].countryCode));
+            }
+        }
+        console.log(populationsArr);
+    }
+}
