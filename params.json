@@ -1,0 +1,6 @@
+{
+  "name": "Data-visualization",
+  "tagline": "",
+  "body": "The visualization presents some data about countries. \r\nI used d3.js, topojson, html, css. \r\n",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
