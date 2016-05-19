@@ -384,6 +384,12 @@ function getCountryName(id) {
     }
 }
 
+var input = document.getElementById("countryA");
+new Awesomplete(input, {
+	list: ["Ada", "Java", "JavaScript", "Brainfuck", "LOLCODE", "Node.js", "Ruby on Rails"]
+});
+
+
 var chosenCountries = [];   
 
 //CHANGE THIS
