@@ -253,6 +253,23 @@ function visualize(error, countries, data, population, continents) {
                 xScale.domain([minYear, maxYear]);
                   
                 //LINE CHART
+//                var menu = d3.select("#chooseForLineChart")
+//                    .on("change", change);  
+//                
+//                function change() {
+//                    min = d3.min(countriesArr[i].years, function(d) {return d.population;});
+//                    max = d3.max(countriesArr[i].years, function(d) {return d.population});
+//                    yScale.domain([min, max]); 
+//                }
+//                
+//                var series = menu.property("value");
+//                
+//                var nested = d3.nest()
+//                    .key(function(d) { return d.type; })
+//                    .map(countriesArr[i].years);
+//                
+//                console.log("nested: " + nested);
+                
                 svgLineChart.selectAll("*")
                     .remove();
                 
@@ -334,7 +351,7 @@ svg.append("g")
         chooseCountry(d);
         console.log("pop" + getCountryPopulation(d.id));
         d3.select("#countryPopulation")
-            .text("(current population: " + getCountryPopulation(d.id) + ")");
+            .text("(current URBAN population: " + getCountryPopulation(d.id) + ")");
         d3.select(".selected").classed("selected", false);
         d3.select(this).classed("selected", true);
     })
@@ -359,8 +376,27 @@ svg.append("g")
             .attr('style', 'left:' + (mouse[0] + 200) +
                     'px; top:' + (mouse[1] + 150) + 'px')
             .html("<p class=\"centerTip\">" + getCountryName(d.id) + "</p>");
-    });   
-//    return countriesArr;
+    });  
+    
+    var listOfCountries = [];
+    function getListOfCountries() {
+        for (var i = 0; i < countriesArr.length; i++) {
+            console.log("list start " + countriesArr[i]);
+            listOfCountries.push(countriesArr[i].countryName);
+        }
+        console.log("list: " + listOfCountries);
+        return listOfCountries;
+    }
+    
+    var inputA = document.getElementById("countryA");
+    new Awesomplete(inputA, {
+       list : getListOfCountries() 
+    });
+    var inputB = document.getElementById("countryB");
+    new Awesomplete(inputB, {
+       list : getListOfCountries()
+    });
+    
 };
 
 function getCountryPopulation(id) {
@@ -383,12 +419,6 @@ function getCountryName(id) {
         }
     }
 }
-
-var input = document.getElementById("countryA");
-new Awesomplete(input, {
-	list: ["Ada", "Java", "JavaScript", "Brainfuck", "LOLCODE", "Node.js", "Ruby on Rails"]
-});
-
 
 var chosenCountries = [];   
 

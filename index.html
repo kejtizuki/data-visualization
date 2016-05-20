@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link href='https://fonts.googleapis.com/css?family=Alegreya:400,400italic,700' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Quicksand:400,700' rel='stylesheet' type='text/css'>
@@ -17,15 +17,24 @@
         <div class="map"></div>
     </div>
     <div class="row">
-        <div class="col-md-6 lineChart"><h2 id="description"></h2><span id="countryPopulation"></span></div>
+        <div class="col-md-6 lineChart">
+            <h2 id="description"></h2> 
+            <span id="countryPopulation"></span>
+<!--
+            <select id="chooseForLineChart">
+                <option value="populationDensity">Population density</option>
+                <option value="populationNormal">Population</option>
+            </select>
+-->
+        </div>
         <div class="col-md-6 bubbleChart"><h2>Population by continents</h2></div>
     </div>
     <div class="row">
         <div id="countriesToCompare" class="center-block">
-            <h2>Compare 2 countries by population</h2>
+            <h2>Compare 2 countries by urban population</h2>
             <div id="form">
-                <input id="countryA" class="countryInput">
-                <input id="countryB" class="countryInput">
+                <input id="countryA" class="awesomplete countryInput">
+                <input id="countryB" class="awesomplete countryInput">
                 <button class="btn" onclick="chooseCountries()" value="button text">Compare!</button>
             </div>
         </div>
@@ -40,7 +49,7 @@
 <script src="https://d3js.org/d3.v3.min.js"></script>
 <script src="https://d3js.org/topojson.v1.min.js"></script>
 <script src="https://d3js.org/queue.v1.min.js"></script>
-<script src="awesomplete-gh-pages/awesomplete.js" async></script>
+<script src="awesomplete-gh-pages/awesomplete.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

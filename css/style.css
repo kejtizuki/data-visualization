@@ -140,3 +140,18 @@ div.tooltip {
     color: #E7969C;
 }
 
+#chooseForLineChart, ul, li {
+    background-color: #363b3f;
+    color: #9c9ede;
+    font-family: 'Quicksand';
+/*    border: 1px solid #9c9ede;*/
+}
+
+.awesomplete li mark {
+    background-color: #ecffc4;
+}
+
+.awesomplete li mark:hover {
+    background-color: white;
+}
+
