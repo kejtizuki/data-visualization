@@ -147,11 +147,15 @@ div.tooltip {
 /*    border: 1px solid #9c9ede;*/
 }
 
+.awesomplete ul{
+    margin: 20px;
+}
+
 .awesomplete li mark {
     background-color: #ecffc4;
 }
 
-.awesomplete li mark:hover {
-    background-color: white;
+.awesomplete ul > li:hover mark {
+    background-color: #d8ff84;
 }
 

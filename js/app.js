@@ -84,9 +84,11 @@ var svgLineChart = d3.select("body").select(".container").select(".row").select(
     .attr("id", "svgLineChart")
     .attr("height", heightChart);
 
-var svgCompare = d3.select("body").select(".container").select(".row").select("#countriesToCompare").select("#form").append("svg")
+var svgCompare = d3.select("body").select(".container").select("#countriesToCompare").append("svg")
     .attr("width", widthChart)
-    .attr("height", heightChart);
+    .attr("height", heightChart)
+    .append("g")
+    .attr("transform", "translate(" + widthChart / 2 + "," + heightChart / 2 + ")");;
     
 var tooltip = d3.select('body').append('div')
     .attr('class', 'hidden tooltip');    
@@ -112,7 +114,6 @@ function visualize(error, countries, data, population, continents) {
         d.population = +d["ContinentPopulation"];
         d.continentName = d["ContinentName"];
     });
-
     
     //BUBBBLE CHART
     y.domain([
@@ -186,8 +187,8 @@ function visualize(error, countries, data, population, continents) {
                 return parseInt(d);
             });
             tooltipBubble.classed('hidden', false)
-                .attr('style', 'left:' + (mouse[0] + 200) +
-                        'px; top:' + (mouse[1] + 120) + 'px')
+                .attr('style', 'left:' + (mouse[0] + 150) +
+                        'px; top:' + (mouse[1] + 180) + 'px')
             .html("<p class=\"centerTip\">" + d.continentName + "</br>" 
                   + "Size:" 
                   + d.size + "km2" + "</br>" 
@@ -251,24 +252,6 @@ function visualize(error, countries, data, population, continents) {
                 var minYear = d3.min(countriesArr[i].years, function(d) {return d.year;});
                 var maxYear = d3.max(countriesArr[i].years, function(d) {return d.year});
                 xScale.domain([minYear, maxYear]);
-                  
-                //LINE CHART
-//                var menu = d3.select("#chooseForLineChart")
-//                    .on("change", change);  
-//                
-//                function change() {
-//                    min = d3.min(countriesArr[i].years, function(d) {return d.population;});
-//                    max = d3.max(countriesArr[i].years, function(d) {return d.population});
-//                    yScale.domain([min, max]); 
-//                }
-//                
-//                var series = menu.property("value");
-//                
-//                var nested = d3.nest()
-//                    .key(function(d) { return d.type; })
-//                    .map(countriesArr[i].years);
-//                
-//                console.log("nested: " + nested);
                 
                 svgLineChart.selectAll("*")
                     .remove();
@@ -325,7 +308,7 @@ function visualize(error, countries, data, population, continents) {
                             return parseInt(d);
                         });
                         tooltip.classed('hidden', false)
-                        .attr('style', 'left:' + (mouse[0] + 200) + 'px; top:' + (mouse[1] + 150) + 'px')
+                        .attr('style', 'left:' + (mouse[0] + 150) + 'px; top:' + (mouse[1] + 180) + 'px')
                         .html("<p class=\"centerTip\">" + d.year + " : " + d.value + "</p>");
                     });
                 
@@ -373,8 +356,8 @@ svg.append("g")
             return parseInt(d);
         });
         tooltip.classed('hidden', false)
-            .attr('style', 'left:' + (mouse[0] + 200) +
-                    'px; top:' + (mouse[1] + 150) + 'px')
+            .attr('style', 'left:' + (mouse[0] + 150) +
+                    'px; top:' + (mouse[1] + 180) + 'px')
             .html("<p class=\"centerTip\">" + getCountryName(d.id) + "</p>");
     });  
     
@@ -384,7 +367,6 @@ svg.append("g")
             console.log("list start " + countriesArr[i]);
             listOfCountries.push(countriesArr[i].countryName);
         }
-        console.log("list: " + listOfCountries);
         return listOfCountries;
     }
     
@@ -422,6 +404,21 @@ function getCountryName(id) {
 
 var chosenCountries = [];   
 
+var radius = Math.min(widthChart, heightChart) / 2;
+
+var arc = d3.svg.arc()
+    .outerRadius(radius - 10)
+    .innerRadius(radius - 70);
+
+var pie = d3.layout.pie()
+        .sort(function(d) { return d.value; })                          
+        .value(function(d) { return d.value; });
+//    .sort(null)
+//    .value(function(d) { return d.value; });
+
+var colorPie = d3.scale.ordinal()
+    .range(["#98abc5", "#a05d56"]);
+
 //CHANGE THIS
 function chooseCountries() {
     console.log("xds");
@@ -433,15 +430,16 @@ function chooseCountries() {
     if (countryA.length !== 0 || countryB.length !== 0) {
         chosenCountries.push(countryA, countryB);
     }
-    console.log(chosenCountries);
-    return drawComparedCountries(chosenCountries);
+    
+    drawDonutChart();
+    
+    return createData(chosenCountries, populationsArr);
 };
 
 var populationsArr = []; 
 
-function drawComparedCountries(chosenCountries) {
+function createPopulationArray(chosenCountries) {
     if (chosenCountries.length !== 0) {
-    console.log("adf");
         for (var i = 0; i < countriesArr.length; i++) {
             var name = countriesArr[i].countryName;
             if (chosenCountries[0] ===  name || chosenCountries[1] === name) {
@@ -451,6 +449,37 @@ function drawComparedCountries(chosenCountries) {
                 populationsArr.unshift(getCountryPopulation(countriesArr[i].countryCode));
             }
         }
-        console.log(populationsArr);
     }
+    return populationsArr;
+}
+
+var dataToCompare = [];
+
+function createData(chosenCountries, populationArr) {
+    populationAr = createPopulationArray(chosenCountries);
+    for (var i = 0; i < chosenCountries.length; i++) {
+        dataToCompare[i] = {name: chosenCountries[i], value: populationArr[i]};
+    }
+    console.log(dataToCompare);
+    return dataToCompare;
+}
+
+function drawDonutChart() {
+    var data = createData(chosenCountries, populationsArr);
+    
+    svgCompare.selectAll("*").remove();
+    
+    svgCompare.datum(data).selectAll("path")
+        .data(pie)
+        .enter()
+        .append("path")
+        .attr("fill", function(d, i) { return colorPie(i); })
+        .attr("d", arc);
+    
+    svgCompare.append("text")
+      .attr("text-anchor", "middle") 
+      .style("fill", "Purple")
+      .style("font", "bold 12px Arial")
+      .text(function(d) { return data.name; }); 
+    
 }
