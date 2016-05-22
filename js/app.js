@@ -417,7 +417,6 @@ var pie = d3.layout.pie()
 var colorPie = d3.scale.ordinal()
     .range(["#98abc5", "#a05d56"]);
 
-//CHANGE THIS
 function chooseCountries() {
     console.log("xds");
     if (chosenCountries.length === 2) {
