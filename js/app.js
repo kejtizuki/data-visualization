@@ -413,8 +413,6 @@ var arc = d3.svg.arc()
 var pie = d3.layout.pie()
         .sort(function(d) { return d.value; })                          
         .value(function(d) { return d.value; });
-//    .sort(null)
-//    .value(function(d) { return d.value; });
 
 var colorPie = d3.scale.ordinal()
     .range(["#98abc5", "#a05d56"]);
@@ -478,8 +476,5 @@ function drawDonutChart() {
     
     svgCompare.append("text")
       .attr("text-anchor", "middle") 
-      .style("fill", "Purple")
-      .style("font", "bold 12px Arial")
       .text(function(d) { return data.name; }); 
-    
 }
