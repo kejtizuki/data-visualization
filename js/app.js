@@ -473,7 +473,18 @@ function drawDonutChart() {
         .attr("fill", function(d, i) { return colorPie(i); })
         .attr("d", arc);
     
-    svgCompare.append("text")
-      .attr("text-anchor", "middle") 
-      .text(function(d) { return data.name; }); 
+    var arcs = svgCompare.selectAll("g.arc")
+        .data(pie(data))
+        .enter()
+        .append("g")
+        .attr("class", "arc");
+    
+    arcs.append("svg:text")
+        .attr("transform", function(d) { 
+            d.outerRadius = radius + 40; 
+            d.innerRadius = radius + 35; 
+            return "translate(" + arc.centroid(d) + ")";
+        })
+        .attr("text-anchor", "middle")
+        .text(function(d, i) { return data[i].name; });
 }
