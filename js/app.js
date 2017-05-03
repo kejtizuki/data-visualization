@@ -425,7 +425,7 @@ function chooseCountries() {
     var countryA = document.getElementById("countryA").value;
     var countryB = document.getElementById("countryB").value;
     if (countryA.length !== 0 || countryB.length !== 0) {
-        chosenCountries.push(countryA, countryB);
+        chosenCountries.unshift(countryA, countryB);
     }
     
     drawDonutChart();
